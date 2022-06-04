@@ -71,6 +71,7 @@ public class User {
     }
 
     public void fetchInfo(Map<String, String> response){
+        response.put("userId", String.valueOf(this.getId()));
         response.put("username", this.getUsername());
         response.put("email", this.getEmail());
         response.put("about_me", this.getAboutMe());
