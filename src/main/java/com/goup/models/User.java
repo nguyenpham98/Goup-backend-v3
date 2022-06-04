@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -31,6 +32,12 @@ public class User {
 
     @Column(name="about_me")
     private String about_me;
+
+    public User(String email, String password) {
+        this.email=email;
+        this.password=password;
+    }
+
     public String getUsername() {
         return username;
     }
@@ -55,11 +62,17 @@ public class User {
         this.password = password;
     }
 
-    public String getAbout_me() {
+    public String getAboutMe() {
         return about_me;
     }
 
-    public void setAbout_me(String about_me) {
+    public void setAboutMe(String about_me) {
         this.about_me = about_me;
+    }
+
+    public void fetchInfo(Map<String, String> response){
+        response.put("username", this.getUsername());
+        response.put("email", this.getEmail());
+        response.put("about_me", this.getAboutMe());
     }
 }
