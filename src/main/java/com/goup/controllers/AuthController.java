@@ -66,6 +66,11 @@ public class AuthController {
         return ResponseEntity.ok().body(response);
     }
 
+    @GetMapping(value="/logout")
+    public void logout(HttpServletRequest httpServletRequest){
+        httpServletRequest.getSession().setAttribute("GOUP_ID", null);
+    }
+
     @GetMapping(value="/me")
     public ResponseEntity<Map<String, String>> get_current_user(HttpServletRequest httpServletRequest){
         Map<String, String> response = new HashMap<>();
@@ -83,6 +88,7 @@ public class AuthController {
         user.fetchInfo(response);
         return ResponseEntity.ok().body(response);
     }
+
 
     @GetMapping(value="/test")
     public String test(HttpServletRequest httpServletRequest){

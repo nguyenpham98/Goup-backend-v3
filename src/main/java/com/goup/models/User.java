@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Data
@@ -23,7 +25,7 @@ public class User {
     private String username;
 
     @NotEmpty
-    @Column(name="email")
+    @Column(name="email", unique=true)
     private String email;
 
     @NotEmpty
@@ -33,9 +35,17 @@ public class User {
     @Column(name="about_me")
     private String about_me;
 
+    @OneToMany(
+            mappedBy="user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Post> posts;
+
     public User(String email, String password) {
         this.email=email;
         this.password=password;
+        this.posts = new ArrayList<Post>();
     }
 
     public String getUsername() {
@@ -68,6 +78,16 @@ public class User {
 
     public void setAboutMe(String about_me) {
         this.about_me = about_me;
+    }
+
+    public void addPost(Post post) {
+        posts.add(post);
+        post.setUser(this);
+    }
+
+    public void removePost(Post post) {
+        posts.remove(post);
+        post.setUser(null);
     }
 
     public void fetchInfo(Map<String, String> response){

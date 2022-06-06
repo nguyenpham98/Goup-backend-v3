@@ -21,12 +21,14 @@ public class GoupApplication {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
 				registry.addMapping("/**")
-						.allowedOrigins("*")
+						.allowedOrigins("localhost:3000")
 						.allowedMethods(CorsConfiguration.ALL)
 						.allowedHeaders(CorsConfiguration.ALL)
-						.allowedOriginPatterns(CorsConfiguration.ALL);
+						.allowCredentials(true);
+				;
 			}
 		};
+		// .allowedOriginPatterns(CorsConfiguration.ALL);
 	}
 
 
