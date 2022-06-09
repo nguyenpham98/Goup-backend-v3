@@ -1,5 +1,8 @@
 package com.goup.models;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,6 +16,9 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "id")
 @Entity
 @Table(name="users")
 public class User {
@@ -40,12 +46,11 @@ public class User {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Post> posts;
+    private List<Post> posts = new ArrayList<>();
 
     public User(String email, String password) {
         this.email=email;
         this.password=password;
-        this.posts = new ArrayList<Post>();
     }
 
     public String getUsername() {

@@ -1,8 +1,9 @@
 package com.goup.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -10,9 +11,13 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.Map;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "id")
 @Entity
 @Table(name="posts")
 public class Post{
@@ -31,11 +36,11 @@ public class Post{
     private Date createDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public Post(String content, User user) {
+    public Post(String content) {
         this.content = content;
-        this.user = user;
     }
 
     public String getContent() {

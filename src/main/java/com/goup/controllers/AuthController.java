@@ -38,6 +38,7 @@ public class AuthController {
             userRepository.save(user);
         }
         catch (Exception e) {
+            e.printStackTrace();
             response.put("message", "Error! Could not register. Please try again.");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
