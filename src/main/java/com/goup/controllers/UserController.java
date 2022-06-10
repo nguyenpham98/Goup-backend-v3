@@ -1,6 +1,5 @@
 package com.goup.controllers;
 
-import com.goup.ResourceNotFoundException;
 import com.goup.models.Post;
 import com.goup.models.User;
 import com.goup.repositories.PostRepository;
@@ -35,15 +34,14 @@ public class UserController {
             response.put("message", "Not logged in yet.");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
-        int userId = Integer.valueOf(token.toString());
-        User user = userRepository.findById(Integer.valueOf(userId)).orElse(null);
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
         if (user == null){
             response.put("message", "No user with that ID.");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
         // create post
-        Post post = new Post(content);
-        user.addPost(post);
+        Post post = new Post(content, user);
         try {
             postRepository.save(post);
         }
@@ -64,8 +62,8 @@ public class UserController {
         if (token == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
-        int userId = Integer.valueOf(token.toString());
-        User user = userRepository.findById(Integer.valueOf(userId)).orElse(null);
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
         if (user == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
@@ -84,25 +82,44 @@ public class UserController {
         if (token == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
-        int userId = Integer.valueOf(token.toString());
-        User user = userRepository.findById(Integer.valueOf(userId)).orElse(null);
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
         if (user == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
         response.put("user", user);
         return ResponseEntity.ok().body(response);
     }
+    @GetMapping(value="/all-my-posts")
+    public ResponseEntity<Map<String, List<Post>>> get_all_my_posts(HttpServletRequest httpServletRequest){
+        Map<String, List<Post>> response = new HashMap<>();
+        // check logged in first for fetching is_following property
+        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
+        if (token == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+        // find all posts
+        // TODO: fetch is_following property
+        List<Post> posts = user.getPosts();
+        response.put("posts", posts);
+        return ResponseEntity.ok().body(response);
+    }
 
     @GetMapping(value="/user-profile/{user_id}")
-    public ResponseEntity<Map<String, User>> get_user_profile(@PathVariable(required=false,name="data") Integer user_id, HttpServletRequest httpServletRequest){
+    public ResponseEntity<Map<String, User>> get_user_profile(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
         Map<String, User> response = new HashMap<>();
         // check logged in first
         Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
         if (token == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
-        int userId = Integer.valueOf(token.toString());
-        User user = userRepository.findById(Integer.valueOf(userId)).orElse(null);
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
         if (user == null){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
@@ -115,25 +132,25 @@ public class UserController {
         // TODO: insert is_following into another_user
         return ResponseEntity.ok().body(response);
     }
+    @GetMapping(value="/all-user-posts/{user_id}")
+    public ResponseEntity<Map<String, List<Post>>> get_all_user_posts(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
+        Map<String, List<Post>> response = new HashMap<>();
+        // check logged in first for fetching is_following property
+        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
+        if (token == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+        // find all posts
+        // TODO: fetch is_following property
+        User another_user = userRepository.findById(user_id).orElse(null);
+        List<Post> posts = another_user.getPosts();
+        response.put("posts", posts);
+        return ResponseEntity.ok().body(response);
+    }
 
-//    @GetMapping("/users")
-//    public ResponseEntity<List<User>> getAllUsers() {
-//        return ResponseEntity.ok(userRepository.findAll());
-//    }
-//
-//    @GetMapping("users/{id}")
-//    public ResponseEntity<User> findUserById(@PathVariable(value = "id") Integer userId) {
-//        User user = userRepository.findById(userId).orElseThrow(
-//                () -> new ResourceNotFoundException("User not found" + userId));
-//        return ResponseEntity.ok().body(user);
-//    }
-//
-//
-//    @DeleteMapping("users/{id}")
-//    public ResponseEntity<Void> deleteUser(@PathVariable(value = "id") Integer userId) {
-//        User user = userRepository.findById(userId).orElseThrow(
-//                () -> new ResourceNotFoundException("User not found" + userId));
-//        userRepository.delete(user);
-//        return ResponseEntity.ok().build();
-//    }
 }

@@ -63,12 +63,12 @@ public class AuthController {
         }
         // create new session when login success
         httpServletRequest.getSession().setAttribute("GOUP_ID", user.getId());
-        response.put("message", "Success! Please login using your new credentials.");
         return ResponseEntity.ok().body(response);
     }
 
     @GetMapping(value="/logout")
     public void logout(HttpServletRequest httpServletRequest){
+        System.out.println(httpServletRequest.getSession().getAttribute("GOUP_ID"));
         httpServletRequest.getSession().setAttribute("GOUP_ID", null);
     }
 
@@ -80,8 +80,8 @@ public class AuthController {
             response.put("message", "Not logged in yet.");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
-        int userId = Integer.valueOf(token.toString());
-        User user = userRepository.findById(Integer.valueOf(userId)).orElse(null);
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
         if (user == null){
             response.put("message", "No user with that ID.");
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
