@@ -68,7 +68,6 @@ public class AuthController {
 
     @GetMapping(value="/logout")
     public void logout(HttpServletRequest httpServletRequest){
-        System.out.println(httpServletRequest.getSession().getAttribute("GOUP_ID"));
         httpServletRequest.getSession().setAttribute("GOUP_ID", null);
     }
 

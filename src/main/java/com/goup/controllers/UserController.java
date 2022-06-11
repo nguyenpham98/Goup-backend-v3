@@ -104,7 +104,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
         }
         // find all posts
-        // TODO: fetch is_following property
         List<Post> posts = user.getPosts();
         response.put("posts", posts);
         return ResponseEntity.ok().body(response);
@@ -151,6 +150,30 @@ public class UserController {
         List<Post> posts = another_user.getPosts();
         response.put("posts", posts);
         return ResponseEntity.ok().body(response);
+    }
+
+    @PostMapping(value="/follow/{user_id}")
+    public void follow(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
+        // check logged in first for fetching is_following property
+        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
+        if (token == null) return;
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) return;
+        User to_follow = userRepository.findById(user_id).orElse(null);
+        user.addFollower(to_follow);
+    }
+
+    @PostMapping(value="/unfollow/{user_id}")
+    public void unfollow(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
+        // check logged in first for fetching is_following property
+        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
+        if (token == null) return;
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) return;
+        User to_unfollow = userRepository.findById(user_id).orElse(null);
+        user.removeFollower(to_unfollow);
     }
 
 }
