@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -34,6 +35,14 @@ public class Post{
     @JoinColumn(name = "user_id", nullable = false)
     @JsonManagedReference
     private User user;
+
+    @OneToMany(
+            mappedBy="user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    @JsonManagedReference
+    private List<Like> likes;
 
     public Post(String content, User author) {
         this.content = content;

@@ -1,7 +1,9 @@
 package com.goup.controllers;
 
+import com.goup.models.Like;
 import com.goup.models.Post;
 import com.goup.models.User;
+import com.goup.repositories.LikeRepository;
 import com.goup.repositories.PostRepository;
 import com.goup.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,9 @@ public class UserController {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private LikeRepository likeRepository;
 
     @PostMapping(value="/add-post", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Map<String,String>> add_post(@RequestBody Map<String, String> data, HttpServletRequest httpServletRequest){
@@ -236,7 +241,34 @@ public class UserController {
         User to_unfollow = userRepository.findById(user_id).orElse(null);
         user.removeFollower(to_unfollow);
         userRepository.save(user);
+    }
 
+    @PostMapping(value="/like/{post_id}", consumes=MediaType.APPLICATION_JSON_VALUE)
+    public void like(@PathVariable(required=false,name="post_id") Integer post_id, HttpServletRequest httpServletRequest){
+        // check logged in first for fetching is_following property
+        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
+        if (token == null) return;
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) return;
+
+        Post post = postRepository.findById(post_id).orElse(null);
+        Like like = new Like(user, post);
+        user.like(post, like);
+    }
+
+    @PostMapping(value="/unlike/{post_id}", consumes=MediaType.APPLICATION_JSON_VALUE)
+    public void unlike(@PathVariable(required=false,name="post_id") Integer post_id, HttpServletRequest httpServletRequest){
+        // check logged in first for fetching is_following property
+        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
+        if (token == null) return;
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) return;
+
+        Post post = postRepository.findById(post_id).orElse(null);
+        Like like = likeRepository.findByPostAndUser(post, user);
+        user.unlike(post, like);
     }
 
 }

@@ -40,6 +40,8 @@ public class User {
     @JsonBackReference
     private List<Post> posts;
 
+
+
     @JoinTable(name = "user_relation", joinColumns = {
             @JoinColumn(name = "follower_id", referencedColumnName = "id", nullable = false)}, inverseJoinColumns = {
             @JoinColumn(name = "followed_id", referencedColumnName = "id", nullable = false)})
@@ -49,14 +51,7 @@ public class User {
     @ManyToMany(mappedBy = "followers")
     private Set<User> followed;
 
-//    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "following")
-//    private Set<User> followers;
-//
-//    @JoinTable(name = "followers",
-//            joinColumns = {@JoinColumn(name = "user_id")},
-//            inverseJoinColumns = {@JoinColumn(name = "follower_id")})
-//    @ManyToMany(cascade = CascadeType.ALL)
-//    private Set<User> following;
+
     public void addFollower(User toFollow) {
         followed.add(toFollow);
         toFollow.getFollowers().add(this);
@@ -112,6 +107,14 @@ public class User {
     public void removePost(Post post) {
         posts.remove(post);
         post.setUser(null);
+    }
+
+    public void like(Post post, Like like) {
+        post.getLikes().add(like);
+    }
+
+    public void unlike(Post post, Like like) {
+        post.getLikes().remove(like);
     }
 
     public void fetchInfo(Map<String, String> response){
