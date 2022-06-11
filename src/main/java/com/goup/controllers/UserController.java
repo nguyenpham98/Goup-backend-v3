@@ -152,28 +152,88 @@ public class UserController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping(value="/follow/{user_id}")
-    public void follow(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
-        // check logged in first for fetching is_following property
+    @PostMapping(value="/edit-post", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, String>> edit_post(@RequestBody Map<String, String> data, HttpServletRequest httpServletRequest){
+        Map<String, String> response = new HashMap<>();
         Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
-        if (token == null) return;
+        if (token == null){
+            response.put("message", "Error! Not logged in yet.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
         int userId = Integer.parseInt(token.toString());
         User user = userRepository.findById(userId).orElse(null);
-        if (user == null) return;
-        User to_follow = userRepository.findById(user_id).orElse(null);
-        user.addFollower(to_follow);
+        if (user == null){
+            response.put("response","Error! No user exists.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+        Post post = postRepository.findById(Integer.valueOf(data.get("id"))).orElse(null);
+        post.setContent(data.get("content"));
+        response.put("message", "Success! Your post is edited.");
+        return ResponseEntity.ok().body(response);
     }
 
-    @PostMapping(value="/unfollow/{user_id}")
-    public void unfollow(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
-        // check logged in first for fetching is_following property
+    @PostMapping(value="/edit-profile", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, String>> edit_profile(@RequestBody Map<String, String> data, HttpServletRequest httpServletRequest){
+        Map<String, String> response = new HashMap<>();
         Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
-        if (token == null) return;
+        if (token == null){
+            response.put("message", "Error! Not logged in yet.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
         int userId = Integer.parseInt(token.toString());
         User user = userRepository.findById(userId).orElse(null);
-        if (user == null) return;
-        User to_unfollow = userRepository.findById(user_id).orElse(null);
-        user.removeFollower(to_unfollow);
+        if (user == null){
+            response.put("response","Error! No user exists.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+        if (!user.getAboutMe().equals(data.get("about_me"))) user.setAboutMe(data.get("about_me"));
+        if (!user.getUsername().equals(data.get("username"))) user.setUsername((data.get("username")));
+        response.put("message", "Success! Your profile has been updated." );
+        return ResponseEntity.ok().body(response);
     }
+
+    @PostMapping(value="/delete-post", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Map<String, String>> delete_post(@RequestBody Map<String, String> data, HttpServletRequest httpServletRequest){
+        Map<String, String> response = new HashMap<>();
+        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
+        if (token == null){
+            response.put("message", "Error! Not logged in yet.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null){
+            response.put("response","Error! No user exists.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
+        postRepository.deleteById(Integer.valueOf(data.get("id")));
+        response.put("message", "Success! Your post is deleted.");
+        return ResponseEntity.ok().body(response);
+    }
+
+
+//    @PostMapping(value="/follow/{user_id}")
+//    public void follow(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
+//        // check logged in first for fetching is_following property
+//        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
+//        if (token == null) return;
+//        int userId = Integer.parseInt(token.toString());
+//        User user = userRepository.findById(userId).orElse(null);
+//        if (user == null) return;
+//        User to_follow = userRepository.findById(user_id).orElse(null);
+//        user.addFollower(to_follow);
+//    }
+//
+//    @PostMapping(value="/unfollow/{user_id}")
+//    public void unfollow(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
+//        // check logged in first for fetching is_following property
+//        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
+//        if (token == null) return;
+//        int userId = Integer.parseInt(token.toString());
+//        User user = userRepository.findById(userId).orElse(null);
+//        if (user == null) return;
+//        User to_unfollow = userRepository.findById(user_id).orElse(null);
+//        user.removeFollower(to_unfollow);
+//    }
 
 }

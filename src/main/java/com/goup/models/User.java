@@ -40,23 +40,23 @@ public class User {
     @JsonBackReference
     private List<Post> posts;
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "following")
-    private Set<User> followers;
-
-    @JoinTable(name = "followers",
-            joinColumns = {@JoinColumn(name = "user_id")},
-            inverseJoinColumns = {@JoinColumn(name = "follower_id")})
-    @ManyToMany(cascade = CascadeType.ALL)
-    private Set<User> following;
-    public void addFollower(User toFollow) {
-        following.add(toFollow);
-        toFollow.getFollowers().add(this);
-    }
-
-    public void removeFollower(User toFollow) {
-        following.remove(toFollow);
-        toFollow.getFollowers().remove(this);
-    }
+//    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "following")
+//    private Set<User> followers;
+//
+//    @JoinTable(name = "followers",
+//            joinColumns = {@JoinColumn(name = "user_id")},
+//            inverseJoinColumns = {@JoinColumn(name = "follower_id")})
+//    @ManyToMany(cascade = CascadeType.ALL)
+//    private Set<User> following;
+//    public void addFollower(User toFollow) {
+//        following.add(toFollow);
+//        toFollow.getFollowers().add(this);
+//    }
+//
+//    public void removeFollower(User toFollow) {
+//        following.remove(toFollow);
+//        toFollow.getFollowers().remove(this);
+//    }
 
     public User(String email, String password) {
         this.email=email;
