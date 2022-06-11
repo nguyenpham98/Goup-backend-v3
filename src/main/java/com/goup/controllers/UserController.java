@@ -212,28 +212,31 @@ public class UserController {
     }
 
 
-//    @PostMapping(value="/follow/{user_id}")
-//    public void follow(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
-//        // check logged in first for fetching is_following property
-//        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
-//        if (token == null) return;
-//        int userId = Integer.parseInt(token.toString());
-//        User user = userRepository.findById(userId).orElse(null);
-//        if (user == null) return;
-//        User to_follow = userRepository.findById(user_id).orElse(null);
-//        user.addFollower(to_follow);
-//    }
-//
-//    @PostMapping(value="/unfollow/{user_id}")
-//    public void unfollow(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
-//        // check logged in first for fetching is_following property
-//        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
-//        if (token == null) return;
-//        int userId = Integer.parseInt(token.toString());
-//        User user = userRepository.findById(userId).orElse(null);
-//        if (user == null) return;
-//        User to_unfollow = userRepository.findById(user_id).orElse(null);
-//        user.removeFollower(to_unfollow);
-//    }
+    @PostMapping(value="/follow/{user_id}", consumes=MediaType.APPLICATION_JSON_VALUE)
+    public void follow(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
+        // check logged in first for fetching is_following property
+        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
+        if (token == null) return;
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) return;
+        User to_follow = userRepository.findById(user_id).orElse(null);
+        user.addFollower(to_follow);
+        userRepository.save(user);
+    }
+
+    @PostMapping(value="/unfollow/{user_id}", consumes=MediaType.APPLICATION_JSON_VALUE)
+    public void unfollow(@PathVariable(required=false,name="user_id") Integer user_id, HttpServletRequest httpServletRequest){
+        // check logged in first for fetching is_following property
+        Object token = httpServletRequest.getSession().getAttribute("GOUP_ID");
+        if (token == null) return;
+        int userId = Integer.parseInt(token.toString());
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null) return;
+        User to_unfollow = userRepository.findById(user_id).orElse(null);
+        user.removeFollower(to_unfollow);
+        userRepository.save(user);
+
+    }
 
 }
